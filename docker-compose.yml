@@ -1,0 +1,27 @@
+version: '3.8' # Indica a versão da sintaxe do Docker Compose
+
+services: # Define os diferentes serviços (contêineres) que compõem a aplicação
+  # Serviço para a API FastAPI
+  web: # Este é o serviço para a API (FastAPI)
+    build: # Diz ao Docker Compose para construir a imagem do Docker a partir do diretório ./app e usar o arquivo Dockerfile que será criado lá dentro.
+      context: ./app
+      dockerfile: Dockerfile
+    ports: # Mapeia a porta local 8000 para a porta 8000 dentro do contêiner web. (Permite acessar a API do navegador pela porta 8000)
+      - "8000:8000"
+    volumes: # Sincroniza o código da pasta local ./app com a pasta /app dentro do contêiner. (Qualquer mudança que fizer no código Python no computador será refletida automaticamente no contêiner)
+      - ./app:/app
+    depends_on: # Garante que o serviço db (MongoDB) será iniciado antes do serviço web (FastAPI).
+      - db
+    environment: # Define uma variável de ambiente dentro do contêiner web que conterá a URL de conexão com o MongoDB. (Usado db como hostname, pois é o nome do serviço do MongoDB no docker-compose.yml)
+      MONGO_DETAILS: mongodb://db:27017 # URL para conectar ao MongoDB
+
+  # Serviço para o Banco de dados MongoDB
+  db: # Este é o serviço para o banco de dados MongoDB.
+    image: mongo:latest # Diz ao Docker Compose para usar a imagem oficial mais recente do MongoDB do Docker Hub.
+    ports: # Mapeia a porta padrão do MongoDB (27017) do contêiner para a mesma porta no computador
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db # Cria um "volume" chamado mongo_data que armazena os dados do MongoDB. (Mesmo que o contêiner seja removido, os dados permanecerão intactos, pois estão no volume persistente)
+
+volumes: # Declara o volume que será usado pelo serviço db
+  mongo_data:

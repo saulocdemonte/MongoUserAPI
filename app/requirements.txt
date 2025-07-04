@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+motor # Novo: Driver assíncrono para MongoDB
+dnspython
+pydantic-settings # Recomendado para gerenciar configurações (ex: MONGO_DETAILS)
+pydantic-core # Necessário para a nova implementação de PyObjectId
+email-validator # Para EmailStr do Pydantic
